@@ -46,11 +46,13 @@ import cl.duoc.wim100.ui.screens.DetalleScreen
 import cl.duoc.wim100.ui.screens.EvaluacionScreen
 import cl.duoc.wim100.ui.screens.FormularioScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
+import cl.duoc.wim100.ui.screens.ResultadosScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
 import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
 import cl.duoc.wim100.ui.viewmodel.DetalleViewModel
 import cl.duoc.wim100.ui.viewmodel.EvaluacionViewModel
 import cl.duoc.wim100.ui.viewmodel.FormularioViewModel
+import cl.duoc.wim100.ui.viewmodel.ResultadosViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
 /** Pestañas de la barra inferior. */
@@ -204,7 +206,11 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                     alVolver = { navController.popBackStack() }
                 )
             }
-            composable(Rutas.RESULTADOS) { EnConstruccion("Resultados") }
+            composable(Rutas.RESULTADOS) {
+                val vm: ResultadosViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                ResultadosScreen(estado = estado, alAbrir = { id -> navController.navigate(Rutas.detalle(id)) })
+            }
             composable(Rutas.HISTORIAL) { EnConstruccion("Historial") }
         }
     }

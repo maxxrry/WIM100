@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Notificaciones locales: desde Android 13 se pide en tiempo de ejecución -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- El selector de PDF (SAF) no necesita permisos de almacenamiento -->
+
     <application
+        android:name=".WimApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -26,7 +24,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +42,7 @@ import cl.duoc.wim100.ui.screens.CandidatasScreen
 import cl.duoc.wim100.ui.screens.DetalleScreen
 import cl.duoc.wim100.ui.screens.EvaluacionScreen
 import cl.duoc.wim100.ui.screens.FormularioScreen
+import cl.duoc.wim100.ui.screens.HistorialScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
 import cl.duoc.wim100.ui.screens.ResultadosScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
@@ -52,6 +50,7 @@ import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
 import cl.duoc.wim100.ui.viewmodel.DetalleViewModel
 import cl.duoc.wim100.ui.viewmodel.EvaluacionViewModel
 import cl.duoc.wim100.ui.viewmodel.FormularioViewModel
+import cl.duoc.wim100.ui.viewmodel.HistorialViewModel
 import cl.duoc.wim100.ui.viewmodel.ResultadosViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
@@ -211,7 +210,11 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                 val estado by vm.uiState.collectAsStateWithLifecycle()
                 ResultadosScreen(estado = estado, alAbrir = { id -> navController.navigate(Rutas.detalle(id)) })
             }
-            composable(Rutas.HISTORIAL) { EnConstruccion("Historial") }
+            composable(Rutas.HISTORIAL) {
+                val vm: HistorialViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                HistorialScreen(estado)
+            }
         }
     }
 }
@@ -223,10 +226,4 @@ private fun irAPestana(navController: NavHostController, ruta: String) {
         launchSingleTop = true
         restoreState = true
     }
-}
-
-// shortcut: marcador temporal; cada paso de pantallas reemplaza una de estas líneas y al final se borra
-@Composable
-private fun EnConstruccion(nombre: String) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("$nombre: en construcción") }
 }

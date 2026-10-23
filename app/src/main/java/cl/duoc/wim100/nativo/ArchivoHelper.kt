@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 
 /**
  * RECURSO NATIVO 1: selector de documentos (Storage Access Framework) + abrir PDF con otra app.
@@ -37,7 +38,7 @@ object ArchivoHelper {
     /** Abre el PDF con la app que tenga el teléfono. Devuelve false si no se pudo. */
     fun abrirPdf(context: Context, uri: String): Boolean {
         val intent = Intent(Intent.ACTION_VIEW)
-            .setDataAndType(Uri.parse(uri), TIPO_PDF)
+            .setDataAndType(uri.toUri(), TIPO_PDF)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)   // presta el acceso a la otra app
         return try {
             context.startActivity(intent)

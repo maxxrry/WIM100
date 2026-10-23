@@ -41,9 +41,11 @@ import androidx.navigation.navArgument
 import cl.duoc.wim100.model.Rol
 import cl.duoc.wim100.nativo.NotificacionHelper
 import cl.duoc.wim100.ui.screens.CandidatasScreen
+import cl.duoc.wim100.ui.screens.FormularioScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
 import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
+import cl.duoc.wim100.ui.viewmodel.FormularioViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
 /** Pestañas de la barra inferior. */
@@ -151,7 +153,20 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                     alRegistrar = { navController.navigate(Rutas.FORMULARIO) }
                 )
             }
-            composable(Rutas.FORMULARIO) { EnConstruccion("Formulario") }
+            composable(Rutas.FORMULARIO) {
+                val vm: FormularioViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                // Guardada con éxito: volver a la lista (la nueva candidata aparece sola)
+                LaunchedEffect(estado.guardada) { if (estado.guardada) navController.popBackStack() }
+                FormularioScreen(
+                    estado = estado,
+                    alCambiar = vm::cambiar,
+                    alElegirCv = vm::elegirCv,
+                    alQuitarCv = vm::quitarCv,
+                    alGuardar = { vm.guardar(sesion?.nombre.orEmpty()) },
+                    alVolver = { navController.popBackStack() }
+                )
+            }
             composable(Rutas.DETALLE, arguments = listOf(navArgument(Rutas.ARG_ID) { type = NavType.LongType })) {
                 EnConstruccion("Detalle")
             }

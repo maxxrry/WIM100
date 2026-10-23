@@ -21,10 +21,11 @@ class CandidataRepository(
         return id
     }
 
-    /** Dirección cierra la postulación como Seleccionada o No seleccionada. */
+    /** Dirección cierra la postulación como Seleccionada o No seleccionada (solo si ya está Evaluada). */
     suspend fun decidir(id: Long, decision: EstadoCandidata, usuario: String) {
         require(decision.cerrada) { "La decisión debe ser Seleccionada o No seleccionada" }
         val candidata = dao.obtener(id) ?: return
+        check(candidata.estado == EstadoCandidata.EVALUADA) { "Solo se decide sobre candidatas evaluadas" }
         dao.cambiarEstado(id, decision)
         historial.registrar(TipoAccion.DECISION, "${candidata.nombre}: ${decision.etiqueta}", usuario, id)
     }

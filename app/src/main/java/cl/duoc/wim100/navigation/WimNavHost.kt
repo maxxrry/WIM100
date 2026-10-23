@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -42,11 +43,13 @@ import cl.duoc.wim100.model.Rol
 import cl.duoc.wim100.nativo.NotificacionHelper
 import cl.duoc.wim100.ui.screens.CandidatasScreen
 import cl.duoc.wim100.ui.screens.DetalleScreen
+import cl.duoc.wim100.ui.screens.EvaluacionScreen
 import cl.duoc.wim100.ui.screens.FormularioScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
 import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
 import cl.duoc.wim100.ui.viewmodel.DetalleViewModel
+import cl.duoc.wim100.ui.viewmodel.EvaluacionViewModel
 import cl.duoc.wim100.ui.viewmodel.FormularioViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
@@ -183,7 +186,23 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                 )
             }
             composable(Rutas.EVALUACION, arguments = listOf(navArgument(Rutas.ARG_ID) { type = NavType.LongType })) {
-                EnConstruccion("Evaluación")
+                val vm: EvaluacionViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                val context = LocalContext.current
+                // Guardada: notificar (si hay permiso) y volver al detalle
+                LaunchedEffect(estado.totalGuardado) {
+                    val total = estado.totalGuardado ?: return@LaunchedEffect
+                    NotificacionHelper.notificar(context, "Evaluación guardada", "${estado.nombreCandidata}: $total / 100 pts")
+                    navController.popBackStack()
+                }
+                EvaluacionScreen(
+                    estado = estado,
+                    alElegirPuntaje = vm::elegirPuntaje,
+                    alCambiarObservacion = vm::cambiarObservacion,
+                    alCambiarComentario = vm::cambiarComentario,
+                    alGuardar = { vm.guardar(sesion?.nombre.orEmpty()) },
+                    alVolver = { navController.popBackStack() }
+                )
             }
             composable(Rutas.RESULTADOS) { EnConstruccion("Resultados") }
             composable(Rutas.HISTORIAL) { EnConstruccion("Historial") }

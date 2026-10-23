@@ -41,10 +41,12 @@ import androidx.navigation.navArgument
 import cl.duoc.wim100.model.Rol
 import cl.duoc.wim100.nativo.NotificacionHelper
 import cl.duoc.wim100.ui.screens.CandidatasScreen
+import cl.duoc.wim100.ui.screens.DetalleScreen
 import cl.duoc.wim100.ui.screens.FormularioScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
 import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
+import cl.duoc.wim100.ui.viewmodel.DetalleViewModel
 import cl.duoc.wim100.ui.viewmodel.FormularioViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
@@ -168,7 +170,17 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                 )
             }
             composable(Rutas.DETALLE, arguments = listOf(navArgument(Rutas.ARG_ID) { type = NavType.LongType })) {
-                EnConstruccion("Detalle")
+                val vm: DetalleViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                val usuario = sesion?.nombre.orEmpty()
+                DetalleScreen(
+                    estado = estado,
+                    rol = sesion?.rol,
+                    alVolver = { navController.popBackStack() },
+                    alEvaluar = { estado.candidata?.let { navController.navigate(Rutas.evaluacion(it.id)) } },
+                    alCvAbierto = { vm.registrarCvAbierto(usuario) },
+                    alDecidir = { decision -> vm.decidir(decision, usuario) }
+                )
             }
             composable(Rutas.EVALUACION, arguments = listOf(navArgument(Rutas.ARG_ID) { type = NavType.LongType })) {
                 EnConstruccion("Evaluación")

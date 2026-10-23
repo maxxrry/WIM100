@@ -38,9 +38,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import cl.duoc.wim100.model.Rol
 import cl.duoc.wim100.nativo.NotificacionHelper
+import cl.duoc.wim100.ui.screens.CandidatasScreen
 import cl.duoc.wim100.ui.screens.LoginScreen
 import cl.duoc.wim100.ui.viewmodel.AppViewModelProvider
+import cl.duoc.wim100.ui.viewmodel.CandidatasViewModel
 import cl.duoc.wim100.ui.viewmodel.SesionViewModel
 
 /** Pestañas de la barra inferior. */
@@ -137,7 +140,17 @@ fun WimNavHost(sesionViewModel: SesionViewModel = viewModel(factory = AppViewMod
                     alIngresar = sesionViewModel::ingresar
                 )
             }
-            composable(Rutas.CANDIDATAS) { EnConstruccion("Candidatas") }
+            composable(Rutas.CANDIDATAS) {
+                val vm: CandidatasViewModel = viewModel(factory = AppViewModelProvider.Factory)
+                val estado by vm.uiState.collectAsStateWithLifecycle()
+                CandidatasScreen(
+                    estado = estado,
+                    puedeRegistrar = sesion?.rol == Rol.EVALUADORA,
+                    alBuscar = vm::buscar,
+                    alAbrir = { id -> navController.navigate(Rutas.detalle(id)) },
+                    alRegistrar = { navController.navigate(Rutas.FORMULARIO) }
+                )
+            }
             composable(Rutas.FORMULARIO) { EnConstruccion("Formulario") }
             composable(Rutas.DETALLE, arguments = listOf(navArgument(Rutas.ARG_ID) { type = NavType.LongType })) {
                 EnConstruccion("Detalle")

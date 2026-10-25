@@ -13,8 +13,8 @@ Asignatura **DSY1105 Desarrollo de Aplicaciones Móviles** · Duoc UC · 2026.
 
 | Nombre | GitHub | Aporte principal |
 |---|---|---|
-| _completar_ | _@usuario_ | _completar_ |
-| _completar_ | _@usuario_ | _completar_ |
+| maximiliano serey |@maxxrry | desarrollador |
+| vicente muñoz | @SK1xez | desarrollador |
 
 ## Tecnologías
 
